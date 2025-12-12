@@ -18,6 +18,11 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Enhanced beads guidance with agent delegation section to help models automatically use `beads-task-agent` for multi-step work
+- Improved CLI command reference with inline descriptions
+
 ## [0.1.2]
 
 ### Fixed
