@@ -11,6 +11,7 @@
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin";
 import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
+import * as tools from "./tool"
 
 type OpencodeClient = PluginInput["client"];
 
@@ -148,5 +149,8 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       config.command = { ...config.command, ...commands };
       config.agent = { ...config.agent, ...agents };
     },
+
+    tool: tools,
   };
 };
+
