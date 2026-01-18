@@ -10,7 +10,7 @@ export const bd_sync: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd("sync --json")
+    const result = await runBd(["sync", "--json"])
     
     // bd sync --json doesn't return valid JSON, so we handle the text response
     const raw = result.raw

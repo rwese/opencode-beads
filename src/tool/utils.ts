@@ -9,11 +9,72 @@ export interface BdCommandResult<T = unknown> {
 
 const BD_PATH = '/Users/wese/.local/bin/bd'
 
-export async function runBd<T = unknown>(args: string): Promise<BdCommandResult<T>> {
+// Cached database path to avoid repeated calls to bd info
+let cachedDbPath: string | null = null
+
+/**
+ * Get the database path by querying bd info command
+ * This dynamically discovers the database path instead of hardcoding it
+ */
+export async function getDatabasePath(): Promise<string> {
+  if (cachedDbPath) {
+    return cachedDbPath
+  }
+  
   try {
-    // Use subprocess with explicit argument splitting
+    // Use bd info command to get database location
+    const { stdout } = await Bun.spawn({
+      cmd: [BD_PATH, 'info', '--json'],
+      stdout: 'pipe',
+      stderr: 'pipe'
+    })
+    
+    const raw = await new Response(stdout).text()
+    const info = JSON.parse(raw)
+    
+    // Extract database path from bd info output
+    // The structure may vary, so we check common locations
+    if (info?.database) {
+      cachedDbPath = String(info.database)
+    } else if (info?.path) {
+      cachedDbPath = String(info.path)
+    } else if (info?.db) {
+      cachedDbPath = String(info.db)
+    } else {
+      throw new Error('Could not determine database path from bd info')
+    }
+    
+    return cachedDbPath
+  } catch (error) {
+    // Fallback: try to use environment variable or default location
+    if (process.env.BEADS_DB) {
+      return process.env.BEADS_DB
+    }
+    
+    throw new Error(`Failed to get database path: ${error instanceof Error ? error.message : String(error)}. Try setting BEADS_DB environment variable.`)
+  }
+}
+
+/**
+ * Force refresh of cached database path
+ */
+export function clearDatabasePathCache(): void {
+  cachedDbPath = null
+}
+
+export async function runBd<T = unknown>(args: string[]): Promise<BdCommandResult<T>> {
+  try {
+    // Get the database path dynamically
+    const dbPath = await getDatabasePath()
+    
+    // Build arguments array with database path and no-daemon mode
+    // Each element in the array becomes a separate argument - no shell parsing
+    const allArgs = ['--db', dbPath, '--no-daemon', ...args]
+    
+    // Execute bd directly without shell - array elements become individual arguments
+    // This handles all characters correctly (quotes, spaces, unicode, etc.)
     const { stdout, stderr } = await Bun.spawn({
-      cmd: [BD_PATH, ...args.split(/\s+/)],
+      cmd: [BD_PATH, ...allArgs],
       stdout: 'pipe',
       stderr: 'pipe'
     })
@@ -58,7 +119,7 @@ export async function runBd<T = unknown>(args: string): Promise<BdCommandResult<
         data: null as T, 
         raw, 
         success: false, 
-        error: errorMsg || `bd ${args} failed: command did not return valid JSON` 
+        error: errorMsg || `bd command failed: command did not return valid JSON` 
       }
     }
   } catch (error) {
@@ -68,7 +129,7 @@ export async function runBd<T = unknown>(args: string): Promise<BdCommandResult<
       data: null as T,
       raw: '',
       success: false,
-      error: `bd ${args} execution failed: ${errorMsg}`
+      error: `bd command execution failed: ${errorMsg}`
     }
   }
 }

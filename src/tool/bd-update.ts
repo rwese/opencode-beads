@@ -14,12 +14,22 @@ export const bd_update: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    let command = `update ${args.id} --json`
-    if (args.status) command += ` --status ${args.status}`
-    if (args.priority !== undefined) command += ` --priority ${args.priority}`
-    if (args.assignee) command += ` --assignee "${args.assignee}"`
+    // Build update command arguments as array
+    const commandArgs = ['update', args.id, '--json']
     
-    const result = await runBd(command)
+    if (args.status) {
+      commandArgs.push('--status', args.status)
+    }
+    
+    if (args.priority !== undefined) {
+      commandArgs.push('--priority', String(args.priority))
+    }
+    
+    if (args.assignee) {
+      commandArgs.push('--assignee', args.assignee)
+    }
+    
+    const result = await runBd(commandArgs)
     
     if (!isSuccess(result)) {
       handleBdError(result)

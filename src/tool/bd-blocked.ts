@@ -10,7 +10,7 @@ export const bd_blocked: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd<Issue[]>("blocked --json")
+    const result = await runBd<Issue[]>(["blocked", "--json"])
     
     if (!isSuccess(result)) {
       handleBdError(result)

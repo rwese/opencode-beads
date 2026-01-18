@@ -12,7 +12,7 @@ export const bd_close: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd(`close ${args.id} --reason "${args.reason}" --json`)
+    const result = await runBd(['close', args.id, '--reason', args.reason, '--json'])
     
     if (!isSuccess(result)) {
       handleBdError(result)

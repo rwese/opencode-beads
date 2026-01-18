@@ -11,7 +11,7 @@ export const bd_list: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd<Issue[]>(`list --status ${args.status} --json`)
+    const result = await runBd<Issue[]>(["list", "--status", args.status, "--json"])
     
     if (!isSuccess(result)) {
       handleBdError(result)

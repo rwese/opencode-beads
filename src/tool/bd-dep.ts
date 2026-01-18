@@ -13,7 +13,7 @@ export const bd_dep: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd<DepAddResponse>(`dep add ${args.from} ${args.to} --type ${args.type} --json`)
+    const result = await runBd<DepAddResponse>(["dep", "add", args.from, args.to, "--type", args.type, "--json"])
     
     if (!isSuccess(result)) {
       handleBdError(result)

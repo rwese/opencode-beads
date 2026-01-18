@@ -10,7 +10,7 @@ export const bd_ready: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd<Issue[]>("ready --json")
+    const result = await runBd<Issue[]>(["ready", "--json"])
     
     if (!isSuccess(result)) {
       handleBdError(result)

@@ -10,7 +10,7 @@ export const bd_stats: ToolDefinition = tool({
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
-    const result = await runBd<StatsResponse>("stats --json")
+    const result = await runBd<StatsResponse>(["stats", "--json"])
     
     if (!isSuccess(result)) {
       handleBdError(result)
