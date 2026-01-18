@@ -30,15 +30,7 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [0.3.2]
 
-### Changed
-
-- Synced vendored beads files to v0.39.1
-
 ## [0.3.1]
-
-### Changed
-
-- Synced vendored beads files to v0.38.0
 
 ## [0.3.0]
 
@@ -92,7 +84,6 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 - Initial release of beads issue tracker integration for OpenCode
 - Automatic context injection via `bd prime` on session start and after compaction
 - CLI guidance for mapping beads MCP tools to `bd` CLI commands
-- Dynamic command loading from vendor directory (available as `/bd-*` commands)
 - `beads-task-agent` subagent for autonomous issue completion
 
 ### New Contributors

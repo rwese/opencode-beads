@@ -19,13 +19,10 @@
 ## Project Structure
 
 - `src/plugin.ts` - Main plugin entry point
-- `src/vendor.ts` - Vendor file loaders
-- `vendor/` - Synced content from upstream beads repo (commands, agents)
 
 ## Notes
 
 - This is an OpenCode plugin integrating the beads issue tracker
-- Vendor files are synced via `scripts/sync-beads.sh` - don't edit directly
 
 ## Working with bd Tools
 
@@ -64,8 +61,8 @@ bd_ready format="markdown"
 # Show project statistics
 bd_stats format="json"
 
-# Create a new issue
-bd_create title="Fix bug" type="bug" priority="1"
+# Create a new issue with acceptance criteria
+bd_create title="Implement user authentication" type="feature" priority="1" acceptance_criteria='["Users can login with email", "Users can logout", "Sessions expire after 24 hours"]'
 
 # Update issue status
 bd_update id="bd-123" status="in_progress"
@@ -76,7 +73,8 @@ bd_close id="bd-123" reason="Completed"
 
 ## Releasing a New Version
 
-**Triggers**: User says "bump the version", "cut a new release", "release a new version", "let's do a release", or similar.
+**Triggers**: User says "bump the version", "cut a new release", "release a new version", "let's do a release", or
+similar.
 
 ### Determining the Version
 
@@ -87,9 +85,8 @@ If the user specifies a version number (e.g., "bump to 0.4.0") or bump type (maj
 3. Get commits since last release: `git log v<current>..HEAD --oneline`
 4. **Read the actual diffs** - don't rely solely on commit messages:
    - `git diff v<current>..HEAD -- src/` for source changes
-   - `git diff v<current>..HEAD -- vendor/` for vendor syncs
 5. Apply semver:
-   - **patch** (0.0.x): Bug fixes, dependency updates, vendor syncs with no breaking changes
+   - **patch** (0.0.x): Bug fixes, dependency updates
    - **minor** (0.x.0): New features, new commands, non-breaking enhancements
    - **major** (x.0.0): Breaking changes to plugin API or behavior
 
@@ -121,7 +118,8 @@ Use this exact format:
 
 ## Issue Tracking with bd (beads)
 
-**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
+**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other
+tracking methods.
 
 ### Why bd?
 
@@ -183,11 +181,13 @@ bd close bd-42 --reason "Completed" --json
 4. **Discover new work?** Create linked issue:
    - `bd create "Found bug" -p 1 --deps discovered-from:<parent-id>`
 5. **Complete**: `bd close <id> --reason "Done"`
-6. **Commit together**: Always commit the `.beads/issues.jsonl` file together with the code changes so issue state stays in sync with code state
+6. **Commit together**: Always commit the `.beads/issues.jsonl` file together with the code changes so issue state stays
+   in sync with code state
 
 ### Writing Self-Contained Issues
 
-Issues must be fully self-contained - readable without any external context (plans, chat history, etc.). A future session should understand the issue completely from its description alone.
+Issues must be fully self-contained - readable without any external context (plans, chat history, etc.). A future
+session should understand the issue completely from its description alone.
 
 **Required elements:**
 
@@ -244,8 +244,8 @@ bd automatically syncs with git:
 
 ### GitHub Copilot Integration
 
-If using GitHub Copilot, also create `.github/copilot-instructions.md` for automatic instruction loading.
-Run `bd onboard` to get the content, or see step 2 of the onboard instructions.
+If using GitHub Copilot, also create `.github/copilot-instructions.md` for automatic instruction loading. Run
+`bd onboard` to get the content, or see step 2 of the onboard instructions.
 
 ### MCP Server (Recommended)
 
@@ -302,8 +302,8 @@ history/
 
 ### CLI Help
 
-Run `bd <command> --help` to see all available flags for any command.
-For example: `bd create --help` shows `--parent`, `--deps`, `--assignee`, etc.
+Run `bd <command> --help` to see all available flags for any command. For example: `bd create --help` shows `--parent`,
+`--deps`, `--assignee`, etc.
 
 ### Important Rules
 
