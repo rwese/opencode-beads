@@ -112,6 +112,7 @@ export interface BdRawIssue {
   issue_type: string
   description?: string
   owner?: string
+  acceptance?: string
   created_at: string
   updated_at: string
   created_by?: string
@@ -148,6 +149,7 @@ export function transformBdIssue(raw: BdRawIssue | Record<string, unknown>) {
     status,
     description: raw.description as string | undefined,
     assignee: raw.owner as string | undefined,
+    acceptance: raw.acceptance as string | undefined,
     createdAt: raw.created_at as string,
     updatedAt: raw.updated_at as string,
     blockedBy: raw.blocked_by as string[] | undefined,

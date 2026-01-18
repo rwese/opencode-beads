@@ -12,6 +12,9 @@ export function listTemplate(data: ListResponse): string {
     if (i.assignee) {
       output += ` @${i.assignee}`
     }
+    if (i.acceptance) {
+      output += ` ✓`
+    }
     output += "\n"
   })
   

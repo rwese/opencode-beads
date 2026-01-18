@@ -7,6 +7,6 @@ export function readyTemplate(data: ReadyResponse): string {
     `| ID | Title | Priority | Type |\n` +
     `|----|-------|----------|------|\n` +
     data.issues.map(i => 
-      `| ${i.id} | ${i.title} | P${i.priority} | ${i.type} |`
+      `| ${i.id} | ${i.title} | P${i.priority} | ${i.type} |${i.acceptance ? ' ✓' : ''}`
     ).join("\n")
 }

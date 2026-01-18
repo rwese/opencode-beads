@@ -11,6 +11,7 @@
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin"
 import * as tools from "./tool"
+import { bd_stats_mock } from "./tool/bd-stats-mock"
 
 type OpencodeClient = PluginInput["client"]
 
@@ -68,13 +69,15 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
   // Check if beads is enabled for this repository
   const beadsEnabled = await isBeadsEnabled($)
 
-  // If beads is not enabled, return minimal plugin with no tools or context
+  // If beads is not enabled, return minimal plugin with mock bd_stats tool
   if (!beadsEnabled) {
     return {
       config: async (config) => {
         // No commands, agents, or tools installed
       },
-      tool: {},
+      tool: {
+        bd_stats: bd_stats_mock,
+      },
     }
   }
 

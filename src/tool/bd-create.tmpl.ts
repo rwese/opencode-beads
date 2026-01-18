@@ -12,5 +12,6 @@ export function createTemplate(data: CreateResponse): string {
     `| Priority | P${data.priority} |\n` +
     `| Status | ${data.status} |\n` +
     (data.assignee ? `| Assignee | ${data.assignee} |\n` : "") +
-    (data.description ? `\n### Description\n\n${data.description}\n` : "")
+    (data.description ? `\n### Description\n\n${data.description}\n` : "") +
+    (data.acceptance ? `\n### Acceptance Criteria\n\n${data.acceptance}\n` : "")
 }

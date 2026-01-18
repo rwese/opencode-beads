@@ -6,6 +6,7 @@ export interface Issue {
   status: "open" | "in_progress" | "blocked" | "closed"
   description?: string
   assignee?: string
+  acceptance?: string
   blockedBy?: string[]
   blocks?: string[]
   createdAt?: string

@@ -20,6 +20,10 @@ export function showTemplate(data: ShowResponse): string {
     output += `\n### Description\n\n${data.description}\n`
   }
   
+  if (data.acceptance) {
+    output += `\n### Acceptance Criteria\n\n${data.acceptance}\n`
+  }
+  
   if (data.blockedBy && data.blockedBy.length > 0) {
     output += `\n### Blocked By\n\n${data.blockedBy.map(id => `- ${id}`).join("\n")}\n`
   }
