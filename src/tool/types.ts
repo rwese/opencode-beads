@@ -8,6 +8,8 @@ export interface Issue {
   assignee?: string
   blockedBy?: string[]
   blocks?: string[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ReadyResponse {
@@ -22,13 +24,14 @@ export interface UpdateResponse extends Issue {
 }
 
 export interface CloseResponse extends Issue {
-  closedReason: string
+  closedReason?: string
+  closedAt?: string
 }
 
 export interface ShowResponse extends Issue {
   blockedBy?: string[]
   blocks?: string[]
-  dependencies?: any[]
+  dependencies?: unknown[]
   labels?: string[]
   createdAt?: string
   updatedAt?: string

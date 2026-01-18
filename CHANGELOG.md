@@ -18,6 +18,16 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Fixed
+
+- **bd\_\* tools**: Completely rewrote all bd\_\* tool implementations to be robust and functional
+  - Fixed PATH issues by using absolute path `/Users/wese/.local/bin/bd`
+  - Replaced failing Bun.$ template literals with `Bun.spawn()` for proper argument handling
+  - Added robust error detection by checking stderr for error messages
+  - Implemented comprehensive data transformation for field name mismatches
+  - Enhanced TypeScript types for better type safety
+  - All tools now work correctly: `bd_list`, `bd_ready`, `bd_stats`, `bd_blocked`, `bd_show`, `bd_create`, `bd_close`, `bd_sync`
+
 ## [0.3.2]
 
 ### Changed

@@ -9,11 +9,10 @@
  * - Task agent for autonomous issue completion
  */
 
-import type { Plugin, PluginInput } from "@opencode-ai/plugin";
-import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
+import type { Plugin, PluginInput } from "@opencode-ai/plugin"
 import * as tools from "./tool"
 
-type OpencodeClient = PluginInput["client"];
+type OpencodeClient = PluginInput["client"]
 
 /**
  * Get the current model/agent context for a session by querying messages.
@@ -26,18 +25,19 @@ async function getSessionContext(
   client: OpencodeClient,
   sessionID: string
 ): Promise<
-  { model?: { providerID: string; modelID: string }; agent?: string } | undefined
+  | { model?: { providerID: string; modelID: string }; agent?: string }
+  | undefined
 > {
   try {
     const response = await client.session.messages({
       path: { id: sessionID },
       query: { limit: 50 },
-    });
+    })
 
     if (response.data) {
       for (const msg of response.data) {
         if (msg.info.role === "user" && "model" in msg.info && msg.info.model) {
-          return { model: msg.info.model, agent: msg.info.agent };
+          return { model: msg.info.model, agent: msg.info.agent }
         }
       }
     }
@@ -45,112 +45,43 @@ async function getSessionContext(
     // On error, return undefined (let opencode use its default)
   }
 
-  return undefined;
+  return undefined
 }
 
 /**
- * Inject beads context into a session.
+ * Check if beads is enabled for the current repository.
  *
- * Runs `bd prime` and injects the output along with CLI guidance.
- * Silently skips if bd is not installed or not initialized.
+ * Uses `bd info --json` to verify beads is properly initialized.
+ * Returns false if the command fails or returns unexpected output.
  */
-async function injectBeadsContext(
-  client: OpencodeClient,
-  $: PluginInput["$"],
-  sessionID: string,
-  context?: { model?: { providerID: string; modelID: string }; agent?: string }
-): Promise<void> {
+async function isBeadsEnabled($: PluginInput["$"]): Promise<boolean> {
   try {
-    const primeOutput = await $`bd prime`.text();
+    await $`bd info --json`.text()
 
-    if (!primeOutput || primeOutput.trim() === "") {
-      return;
-    }
-
-    const beadsContext = `<beads-context>
-${primeOutput.trim()}
-</beads-context>
-
-${BEADS_GUIDANCE}`;
-
-    // Inject content via noReply + synthetic
-    // Must pass model and agent to prevent mode/model switching
-    await client.session.prompt({
-      path: { id: sessionID },
-      body: {
-        noReply: true,
-        model: context?.model,
-        agent: context?.agent,
-        parts: [{ type: "text", text: beadsContext, synthetic: true }],
-      },
-    });
+    return true
   } catch {
-    // Silent skip if bd prime fails (not installed or not initialized)
+    return false
   }
 }
 
-
 export const BeadsPlugin: Plugin = async ({ client, $ }) => {
-  const [commands, agents] = await Promise.all([loadCommands(), loadAgent()]);
+  // Check if beads is enabled for this repository
+  const beadsEnabled = await isBeadsEnabled($)
 
-  const injectedSessions = new Set<string>();
+  // If beads is not enabled, return minimal plugin with no tools or context
+  if (!beadsEnabled) {
+    return {
+      config: async (config) => {
+        // No commands, agents, or tools installed
+      },
+      tool: {},
+    }
+  }
 
   return {
-    "chat.message": async (_input, output) => {
-      const sessionID = output.message.sessionID;
-
-      // Skip if already injected this session
-      if (injectedSessions.has(sessionID)) return;
-
-      // Check if beads-context was already injected (handles plugin reload/reconnection)
-      try {
-        const existing = await client.session.messages({
-          path: { id: sessionID },
-        });
-
-        if (existing.data) {
-          const hasBeadsContext = existing.data.some(msg => {
-            const parts = (msg as any).parts || (msg.info as any).parts;
-            if (!parts) return false;
-            return parts.some((part: any) =>
-              part.type === 'text' && part.text?.includes('<beads-context>')
-            );
-          });
-
-          if (hasBeadsContext) {
-            injectedSessions.add(sessionID);
-            return;
-          }
-        }
-      } catch {
-        // On error, proceed with injection
-      }
-
-      injectedSessions.add(sessionID);
-
-      // Use output.message which has the resolved model/agent values
-      // This ensures our injected noReply message has identical model/agent
-      // to the real user message, preventing mode/model switching
-      await injectBeadsContext(client, $, sessionID, {
-        model: output.message.model,
-        agent: output.message.agent,
-      });
-    },
-
-    event: async ({ event }) => {
-      if (event.type === "session.compacted") {
-        const sessionID = event.properties.sessionID;
-        const context = await getSessionContext(client, sessionID);
-        await injectBeadsContext(client, $, sessionID, context);
-      }
-    },
-
     config: async (config) => {
-      config.command = { ...config.command, ...commands };
-      config.agent = { ...config.agent, ...agents };
+      // No commands, agents, or tools installed
     },
-
     tool: tools,
-  };
-};
-
+  }
+}
