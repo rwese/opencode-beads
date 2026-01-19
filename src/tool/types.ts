@@ -16,6 +16,7 @@ export interface Issue {
 export interface ReadyResponse {
   issues: Issue[]
   count: number
+  limit?: number
 }
 
 export interface CreateResponse extends Issue {}

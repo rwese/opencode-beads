@@ -8,6 +8,7 @@ export const bd_ready: ToolDefinition = tool({
   description: "Find ready-to-work tasks with no blockers",
   args: {
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
+    limit: tool.schema.number().default(100),
   },
   execute: async (args) => {
     const result = await runBd<Issue[]>(["ready", "--json"])
@@ -17,9 +18,11 @@ export const bd_ready: ToolDefinition = tool({
     }
     
     const issues = transformBdIssues(result.data as unknown[])
+    const limitedIssues = issues.slice(0, args.limit)
     const response: ReadyResponse = {
-      issues,
-      count: issues.length
+      issues: limitedIssues,
+      count: limitedIssues.length,
+      limit: args.limit
     }
     
     return formatOutput(response, result.raw, args.format, readyTemplate)
