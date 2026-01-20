@@ -2,8 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project attempts to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project attempts to adhere to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!--
 ## [${version}]
@@ -26,7 +26,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
   - Added robust error detection by checking stderr for error messages
   - Implemented comprehensive data transformation for field name mismatches
   - Enhanced TypeScript types for better type safety
-  - All tools now work correctly: `bd_list`, `bd_ready`, `bd_stats`, `bd_blocked`, `bd_show`, `bd_create`, `bd_close`, `bd_sync`
+  - All tools now work correctly: `bd_list`, `bd_ready`, `bd_stats`, `bd_blocked`, `bd_show`, `bd_create`, `bd_close`,
+    `bd_sync`
 
 ## [0.3.2]
 
@@ -52,8 +53,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ### Changed
 
-- Strengthened agent delegation guidance to default to using `beads-task-agent` for any multi-command or context-gathering work
-- Added explicit guidance for status overview queries ("what's next", "what's blocked") to use the agent instead of running multiple `bd` commands
+- Strengthened agent delegation guidance to default to using `beads-task-agent` for any multi-command or
+  context-gathering work
+- Added explicit guidance for status overview queries ("what's next", "what's blocked") to use the agent instead of
+  running multiple `bd` commands
 - Split guidance into session-specific (when to delegate) and subagent-specific (how to behave) contexts
 - Added subagent awareness instructions explaining that final message is returned to calling agent
 - Added output format guidance for subagent to return concise summaries instead of raw JSON dumps
@@ -62,14 +65,16 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ### Changed
 
-- Enhanced beads guidance with agent delegation section to help models automatically use `beads-task-agent` for multi-step work
+- Enhanced beads guidance with agent delegation section to help models automatically use `beads-task-agent` for
+  multi-step work
 - Improved CLI command reference with inline descriptions
 
 ## [0.1.2]
 
 ### Fixed
 
-- Fixed context injection being skipped when other plugins inject messages first by checking for actual `<beads-context>` tag instead of just message count
+- Fixed context injection being skipped when other plugins inject messages first by checking for actual
+  `<beads-context>` tag instead of just message count
 
 ## [0.1.1]
 
