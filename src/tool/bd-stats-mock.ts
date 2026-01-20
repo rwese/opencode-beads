@@ -1,16 +1,16 @@
-import { tool } from '@opencode-ai/plugin';
-import type { ToolDefinition } from '@opencode-ai/plugin';
+import { tool } from "@opencode-ai/plugin"
+import type { ToolDefinition } from "@opencode-ai/plugin"
 
 /**
  * Mock bd_stats tool that provides helpful information when beads is not initialized.
  * This tool is only used when beads is not enabled for the repository.
  */
 export const bd_stats_mock: ToolDefinition = tool({
-  description: 'Show project statistics (mock tool when beads is not initialized)',
+  description: "Show project statistics (mock tool when beads is not initialized)",
   args: {
-    format: tool.schema.enum(['markdown', 'json', 'raw']).default('markdown'),
+    format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
-  execute: async args => {
+  execute: async (args) => {
     const mockData = {
       total: 0,
       open: 0,
@@ -18,15 +18,15 @@ export const bd_stats_mock: ToolDefinition = tool({
       closed: 0,
       blocked: 0,
       byPriority: {},
-      message: 'Beads is not initialized for this repository',
-    };
-
-    if (args.format === 'json') {
-      return JSON.stringify(mockData, null, 2);
+      message: "Beads is not initialized for this repository"
     }
 
-    if (args.format === 'raw') {
-      return 'Beads is not initialized for this repository.\n\nTo enable beads, run:\nbd init';
+    if (args.format === "json") {
+      return JSON.stringify(mockData, null, 2)
+    }
+
+    if (args.format === "raw") {
+      return `Beads is not initialized for this repository.\n\nTo enable beads, run:\nbd init`
     }
 
     // Default markdown format
@@ -68,6 +68,6 @@ Once beads is initialized, you'll have access to:
 - \`bd create "title"\` - Create new issues
 - \`bd show <id>\` - View issue details
 - And more...
-`;
+`
   },
-});
+})

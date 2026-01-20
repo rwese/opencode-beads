@@ -1,30 +1,27 @@
-import { tool } from '@opencode-ai/plugin';
-import type { ToolDefinition } from '@opencode-ai/plugin';
-import { runBd, formatOutput, transformBdIssues, isSuccess, handleBdError } from './utils';
-import { readyTemplate } from './bd-ready.tmpl';
-import type { ReadyResponse, Issue } from './types';
+import { tool } from "@opencode-ai/plugin"
+import type { ToolDefinition } from "@opencode-ai/plugin"
+import { runBd, formatOutput, transformBdIssues, isSuccess, handleBdError } from "./utils"
+import { readyTemplate } from "./bd-ready.tmpl"
+import type { ReadyResponse, Issue } from "./types"
 
 export const bd_ready: ToolDefinition = tool({
-  description: 'Find ready-to-work tasks with no blockers',
+  description: "Find ready-to-work tasks with no blockers",
   args: {
-    format: tool.schema.enum(['markdown', 'json', 'raw']).default('markdown'),
-    limit: tool.schema.number().default(100),
+    format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
-  execute: async args => {
-    const result = await runBd<Issue[]>(['ready', '--json']);
-
+  execute: async (args) => {
+    const result = await runBd<Issue[]>(["ready", "--json"])
+    
     if (!isSuccess(result)) {
-      handleBdError(result);
+      handleBdError(result)
     }
-
-    const issues = transformBdIssues(result.data as unknown[]);
-    const limitedIssues = issues.slice(0, args.limit);
+    
+    const issues = transformBdIssues(result.data as unknown[])
     const response: ReadyResponse = {
-      issues: limitedIssues,
-      count: limitedIssues.length,
-      limit: args.limit,
-    };
-
-    return formatOutput(response, result.raw, args.format, readyTemplate);
+      issues,
+      count: issues.length
+    }
+    
+    return formatOutput(response, result.raw, args.format, readyTemplate)
   },
-});
+})
