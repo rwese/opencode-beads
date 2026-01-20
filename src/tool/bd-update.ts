@@ -7,10 +7,10 @@ import type { UpdateResponse, Issue } from "./types"
 export const bd_update: ToolDefinition = tool({
   description: "Update an issue's status, priority, or assignee",
   args: {
-    id: tool.schema.string(),
-    status: tool.schema.enum(["open", "in_progress", "blocked", "closed"]).optional(),
-    priority: tool.schema.number().optional(),
-    assignee: tool.schema.string().optional(),
+    id: tool.schema.string().describe("The issue ID to update (REQUIRED)"),
+    status: tool.schema.enum(["open", "in_progress", "blocked", "closed"]).optional().describe("New status for the issue (optional)"),
+    priority: tool.schema.number().optional().describe("New priority level 1-5 (optional)"),
+    assignee: tool.schema.string().optional().describe("New assignee for the issue (optional)"),
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {

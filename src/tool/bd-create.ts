@@ -7,12 +7,12 @@ import type { CreateResponse } from "./types"
 export const bd_create: ToolDefinition = tool({
   description: "Create a new issue with optional acceptance criteria and dependencies",
   args: {
-    title: tool.schema.string().describe("The title of the issue"),
-    type: tool.schema.enum(["bug", "feature", "task", "epic", "chore"]).default("task"),
-    priority: tool.schema.number().default(2).describe("Priority level (1-5, with 1 being highest)"),
-    acceptance: tool.schema.string().optional().describe("Acceptance criteria for the issue"),
-    description: tool.schema.string().optional().describe("Detailed description of the issue"),
-    depends_on: tool.schema.array(tool.schema.string()).optional().describe("Array of ticket IDs this issue depends on"),
+    title: tool.schema.string().describe("The title of the issue (REQUIRED - cannot be empty)"),
+    type: tool.schema.enum(["bug", "feature", "task", "epic", "chore"]).default("task").describe("Issue type (REQUIRED, defaults to 'task')"),
+    priority: tool.schema.string().default("2").describe("Priority as number (0-4) or letter (P0-P4, 0=highest, defaults to 2)"),
+    acceptance: tool.schema.string().optional().describe("Acceptance criteria for the issue (optional)"),
+    description: tool.schema.string().optional().describe("Detailed description of the issue (optional)"),
+    depends_on: tool.schema.array(tool.schema.string()).optional().describe("Array of ticket IDs this issue depends on (optional)"),
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
@@ -21,9 +21,10 @@ export const bd_create: ToolDefinition = tool({
       throw new Error("Invalid issue title: title cannot be empty")
     }
     
-    // Validate priority range
-    if (args.priority < 1 || args.priority > 5) {
-      throw new Error(`Invalid priority: ${args.priority}. Priority must be between 1 and 5.`)
+    // Validate priority format (0-4 or P0-P4)
+    const priorityNum = parseInt(args.priority)
+    if (isNaN(priorityNum) || priorityNum < 0 || priorityNum > 4) {
+      throw new Error(`Invalid priority: ${args.priority}. Priority must be 0-4 or P0-P4 (0=highest).`)
     }
     
     // Validate depends_on references
@@ -50,7 +51,7 @@ export const bd_create: ToolDefinition = tool({
       'create',
       args.title,
       '-t', args.type,
-      '-p', String(args.priority)
+      '-p', args.priority
     ]
     
     if (args.acceptance) {

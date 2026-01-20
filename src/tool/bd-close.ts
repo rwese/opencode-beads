@@ -7,8 +7,8 @@ import type { CloseResponse } from "./types"
 export const bd_close: ToolDefinition = tool({
   description: "Close an issue with a reason",
   args: {
-    id: tool.schema.string(),
-    reason: tool.schema.string().default("Completed"),
+    id: tool.schema.string().describe("The issue ID to close (REQUIRED)"),
+    reason: tool.schema.string().default("Completed").describe("Reason for closing the issue"),
     format: tool.schema.enum(["markdown", "json", "raw"]).default("markdown"),
   },
   execute: async (args) => {
