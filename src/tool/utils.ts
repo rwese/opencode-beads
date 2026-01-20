@@ -238,18 +238,58 @@ export function formatOutput<T>(
 }
 
 /**
- * Get the current session ID from environment or context.
- * Uses CLAUDE_SESSION_ID if available, falls back to 'unknown'.
+ * Session context interface for OpenCode events
  */
-export function getSessionId(): string {
-  return process.env.CLAUDE_SESSION_ID || 'unknown';
+interface SessionContext {
+  sessionID?: string;
+  info?: {
+    sessionID?: string;
+    id?: string;
+  };
+}
+
+/**
+ * Get the current session ID from OpenCode event context or environment.
+ * Uses OpenCode's multi-layered session ID extraction pattern.
+ *
+ * Priority order (matching OpenCode's approach):
+ * 1. OpenCode event context (if available via environment variable)
+ * 2. CLAUDE_SESSION_ID environment variable
+ * 3. Fallback to 'unknown'
+ */
+export function getSessionId(context?: SessionContext): string {
+  // Priority 1: Check OpenCode event context if provided
+  if (context?.sessionID && typeof context.sessionID === 'string') {
+    return context.sessionID;
+  }
+  if (context?.info?.sessionID && typeof context.info.sessionID === 'string') {
+    return context.info.sessionID;
+  }
+  if (context?.info?.id && typeof context.info.id === 'string') {
+    return context.info.id;
+  }
+
+  // Priority 2: Check environment variable (set by OpenCode)
+  if (process.env.CLAUDE_SESSION_ID) {
+    return process.env.CLAUDE_SESSION_ID;
+  }
+
+  // Priority 3: Fallback for other contexts
+  if (process.env.OPENCODE_SESSION_ID) {
+    return process.env.OPENCODE_SESSION_ID;
+  }
+
+  // Final fallback
+  return 'unknown';
 }
 
 /**
  * Sync changes to beads after modifying operations.
  * Uses --flush-only to sync without pulling, and --message for commit message.
+ *
+ * @param context Optional OpenCode session context for accurate session tracking
  */
-export async function syncChanges(): Promise<BdCommandResult> {
-  const sessionId = getSessionId();
+export async function syncChanges(context?: SessionContext): Promise<BdCommandResult> {
+  const sessionId = getSessionId(context);
   return runBd(['sync', '--flush-only', '--message', `quicksave ${sessionId}`]);
 }
