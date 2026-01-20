@@ -9,11 +9,11 @@
  * - Task agent for autonomous issue completion
  */
 
-import type { Plugin, PluginInput } from "@opencode-ai/plugin"
-import * as tools from "./tool"
-import { bd_stats_mock } from "./tool/bd-stats-mock"
+import type { Plugin, PluginInput } from '@opencode-ai/plugin';
+import * as tools from './tool';
+import { bd_stats_mock } from './tool/bd-stats-mock';
 
-type OpencodeClient = PluginInput["client"]
+type OpencodeClient = PluginInput['client'];
 
 /**
  * Get the current model/agent context for a session by querying messages.
@@ -25,20 +25,17 @@ type OpencodeClient = PluginInput["client"]
 async function getSessionContext(
   client: OpencodeClient,
   sessionID: string
-): Promise<
-  | { model?: { providerID: string; modelID: string }; agent?: string }
-  | undefined
-> {
+): Promise<{ model?: { providerID: string; modelID: string }; agent?: string } | undefined> {
   try {
     const response = await client.session.messages({
       path: { id: sessionID },
       query: { limit: 50 },
-    })
+    });
 
     if (response.data) {
       for (const msg of response.data) {
-        if (msg.info.role === "user" && "model" in msg.info && msg.info.model) {
-          return { model: msg.info.model, agent: msg.info.agent }
+        if (msg.info.role === 'user' && 'model' in msg.info && msg.info.model) {
+          return { model: msg.info.model, agent: msg.info.agent };
         }
       }
     }
@@ -46,7 +43,7 @@ async function getSessionContext(
     // On error, return undefined (let opencode use its default)
   }
 
-  return undefined
+  return undefined;
 }
 
 /**
@@ -55,36 +52,36 @@ async function getSessionContext(
  * Uses `bd info --json` to verify beads is properly initialized.
  * Returns false if the command fails or returns unexpected output.
  */
-async function isBeadsEnabled($: PluginInput["$"]): Promise<boolean> {
+async function isBeadsEnabled($: PluginInput['$']): Promise<boolean> {
   try {
-    await $`bd info --json`.text()
+    await $`bd info --json`.text();
 
-    return true
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
 export const BeadsPlugin: Plugin = async ({ client, $ }) => {
   // Check if beads is enabled for this repository
-  const beadsEnabled = await isBeadsEnabled($)
+  const beadsEnabled = await isBeadsEnabled($);
 
   // If beads is not enabled, return minimal plugin with mock bd_stats tool
   if (!beadsEnabled) {
     return {
-      config: async (config) => {
+      config: async config => {
         // No commands, agents, or tools installed
       },
       tool: {
         bd_stats: bd_stats_mock,
       },
-    }
+    };
   }
 
   return {
-    config: async (config) => {
+    config: async config => {
       // No commands, agents, or tools installed
     },
     tool: tools,
-  }
-}
+  };
+};
