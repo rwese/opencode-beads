@@ -1,6 +1,13 @@
 import { tool } from '@opencode-ai/plugin';
 import type { ToolDefinition } from '@opencode-ai/plugin';
-import { runBd, formatOutput, transformBdIssue, isSuccess, handleBdError } from './utils';
+import {
+  runBd,
+  formatOutput,
+  transformBdIssue,
+  isSuccess,
+  handleBdError,
+  syncChanges,
+} from './utils';
 import { createTemplate } from './bd-create.tmpl';
 import type { CreateResponse } from './types';
 
@@ -15,7 +22,7 @@ export const bd_create: ToolDefinition = tool({
     priority: tool.schema
       .string()
       .default('2')
-      .describe('Priority as number (0-4) or letter (P0-P4, 0=highest, defaults to 2)'),
+      .describe('Priority 0-4 (0=highest priority, 4=lowest, defaults to 2)'),
     acceptance: tool.schema
       .string()
       .optional()
@@ -96,6 +103,9 @@ export const bd_create: ToolDefinition = tool({
     }
 
     const issue = transformBdIssue(issueData as Parameters<typeof transformBdIssue>[0]);
+
+    // Sync changes to persist the new issue
+    await syncChanges();
 
     return formatOutput(issue as CreateResponse, result.raw, args.format, createTemplate);
   },

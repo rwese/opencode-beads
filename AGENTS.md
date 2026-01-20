@@ -145,6 +145,6 @@ Manual database path handling may be necessary when:
 For these cases, extract the path from `bd info --json` using the correct key:
 
 ```typescript
-const info = JSON.parse(rawOutput)
-const dbPath = info.database_path // NOT info.database or info.path
+const info = JSON.parse(rawOutput);
+const dbPath = info.database_path; // NOT info.database or info.path
 ```

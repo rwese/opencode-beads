@@ -1,6 +1,6 @@
 import { tool } from '@opencode-ai/plugin';
 import type { ToolDefinition } from '@opencode-ai/plugin';
-import { runBd, formatOutput, isSuccess, handleBdError } from './utils';
+import { runBd, formatOutput, isSuccess, handleBdError, syncChanges } from './utils';
 import { depTemplate } from './bd-dep.tmpl';
 import type { DepAddResponse } from './types';
 
@@ -41,6 +41,9 @@ export const bd_dep: ToolDefinition = tool({
     if (!isSuccess(result)) {
       handleBdError(result);
     }
+
+    // Sync changes to persist the dependency
+    await syncChanges();
 
     return formatOutput(result.data, result.raw, args.format, depTemplate);
   },

@@ -1,6 +1,13 @@
 import { tool } from '@opencode-ai/plugin';
 import type { ToolDefinition } from '@opencode-ai/plugin';
-import { runBd, formatOutput, transformBdIssue, isSuccess, handleBdError } from './utils';
+import {
+  runBd,
+  formatOutput,
+  transformBdIssue,
+  isSuccess,
+  handleBdError,
+  syncChanges,
+} from './utils';
 import { claimTemplate } from './bd-claim.tmpl';
 import type { UpdateResponse } from './types';
 
@@ -31,6 +38,9 @@ export const bd_claim: ToolDefinition = tool({
     const rawData = result.data as unknown;
     const issueData = Array.isArray(rawData) ? rawData[0] : rawData;
     const issue = transformBdIssue(issueData as Parameters<typeof transformBdIssue>[0]);
+
+    // Sync changes to persist the claim
+    await syncChanges();
 
     return formatOutput(issue as UpdateResponse, result.raw, args.format, claimTemplate);
   },

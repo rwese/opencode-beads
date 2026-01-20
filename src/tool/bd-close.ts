@@ -1,6 +1,6 @@
 import { tool } from '@opencode-ai/plugin';
 import type { ToolDefinition } from '@opencode-ai/plugin';
-import { runBd, formatOutput, isSuccess, handleBdError } from './utils';
+import { runBd, formatOutput, isSuccess, handleBdError, syncChanges } from './utils';
 import { closeTemplate } from './bd-close.tmpl';
 import type { CloseResponse } from './types';
 
@@ -36,6 +36,9 @@ export const bd_close: ToolDefinition = tool({
       createdAt: issue.created_at as string | undefined,
       updatedAt: issue.updated_at as string | undefined,
     };
+
+    // Sync changes to persist the closure
+    await syncChanges();
 
     return formatOutput(response, result.raw, args.format, closeTemplate);
   },

@@ -236,3 +236,20 @@ export function formatOutput<T>(
   if (format === 'raw') return raw;
   return template(data);
 }
+
+/**
+ * Get the current session ID from environment or context.
+ * Uses CLAUDE_SESSION_ID if available, falls back to 'unknown'.
+ */
+export function getSessionId(): string {
+  return process.env.CLAUDE_SESSION_ID || 'unknown';
+}
+
+/**
+ * Sync changes to beads after modifying operations.
+ * Uses --flush-only to sync without pulling, and --message for commit message.
+ */
+export async function syncChanges(): Promise<BdCommandResult> {
+  const sessionId = getSessionId();
+  return runBd(['sync', '--flush-only', '--message', `quicksave ${sessionId}`]);
+}
